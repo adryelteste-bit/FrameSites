@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oficina de Sites</title>
+<style>
+:root{--bg:#e9ecf2;--pan:#fff;--ink:#1b2233;--mut:#5d667a;--line:#d5dae5;--acc:#3b5bff;--accfg:#fff;--ok:#12805c;--bad:#b3261e;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#141824;--pan:#1d2233;--ink:#e8ecf7;--mut:#9aa3ba;--line:#2e3550;--acc:#7b93ff;--accfg:#10142a;--ok:#4fd1a1;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font:15px/1.4 "Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--pan);border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:17px;margin:0 8px 0 0;letter-spacing:-.01em}
+#pn{color:var(--mut);font-size:14px;max-width:30vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp{flex:1}
+.b{border:1px solid var(--line);background:var(--pan);border-radius:8px;padding:7px 12px}
+.b:hover{border-color:var(--acc)}
+.b.p{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:600}
+.b:disabled{opacity:.5;cursor:not-allowed}
+.b.pub{background:var(--ok);border-color:var(--ok);color:var(--pan);font-weight:600}
+main{flex:1;display:grid;grid-template-columns:170px 1fr 260px;min-height:0}
+aside{background:var(--pan);padding:12px;overflow:auto}
+#L{border-right:1px solid var(--line)}
+#R{border-left:1px solid var(--line)}
+aside h2{font-size:13px;margin:0 0 8px;color:var(--mut);font-weight:600}
+#L .b{display:block;width:100%;text-align:left;margin-bottom:6px}
+#stage{overflow:auto;padding:12px;display:flex;justify-content:center;align-items:flex-start}
+#wrap{position:relative;box-shadow:0 2px 14px rgba(20,30,60,.18);flex:none}
+.frame{position:absolute;left:0;top:0;width:1000px;height:640px;transform-origin:0 0;overflow:hidden}
+.el{position:absolute;touch-action:none}
+#fr .el{cursor:move}
+.in{width:100%;height:100%;display:flex;align-items:center;overflow:hidden;white-space:pre-wrap;word-break:break-word;transition:transform .25s,box-shadow .25s;user-select:none}
+.in img{width:100%;height:100%;object-fit:cover;pointer-events:none;display:block}
+.t-title{font-weight:700;line-height:1.1}
+.t-btn{justify-content:center;font-weight:600;cursor:pointer}
+.el .h{display:none;position:absolute;right:-7px;bottom:-7px;width:16px;height:16px;background:var(--acc);border:2px solid #fff;border-radius:50%;cursor:nwse-resize}
+.el.sel{outline:2px solid var(--acc)}
+.el.sel .h{display:block}
+label.f{display:block;font-size:13px;color:var(--mut);margin:10px 0 3px}
+aside input[type=text],aside input[type=url],aside select,aside textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:6px 8px}
+aside input[type=color]{width:100%;height:34px;border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:2px}
+aside input[type=range]{width:100%}
+#fx{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
+@keyframes fade{from{opacity:0}}
+@keyframes slide{from{transform:translateY(48px);opacity:0}}
+@keyframes zoom{from{transform:scale(.5);opacity:0}}
+@keyframes pulse{50%{transform:scale(1.07)}}
+@keyframes float{50%{transform:translateY(-12px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{0%,70%,100%{transform:none}75%{transform:translateX(-6px)}85%{transform:translateX(6px)}95%{transform:translateX(-3px)}}
+.fx-fade{animation:fade 1s both}.fx-slide{animation:slide .9s both}.fx-zoom{animation:zoom .8s both}
+.fx-pulse{animation:pulse 1.6s infinite}.fx-float{animation:float 3s ease-in-out infinite}
+.fx-spin{animation:spin 6s linear infinite}.fx-shake{animation:shake 2.2s infinite}
+.fx-grow:hover{transform:scale(1.12)}.fx-glow:hover{box-shadow:0 0 28px 6px #7b93ff}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--pan);color:var(--ink);padding:20px;width:min(460px,92vw)}
+dialog::backdrop{background:rgba(10,14,30,.55)}
+dialog h3{margin:0 0 12px;font-size:18px}
+dialog .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+dialog input[type=text]{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.opt{display:flex;gap:8px;align-items:flex-start;padding:9px;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+.opt small{display:block;color:var(--mut)}
+.opt.off{opacity:.55}
+.terms{max-height:150px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px;color:var(--mut)}
+.bar{height:10px;border-radius:6px;background:var(--bg);overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+#lk{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.note{font-size:13px;color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99;max-width:90vw}
+#toast.on{opacity:1}
+#vw{position:fixed;inset:0;overflow:auto;z-index:50}
+#vw[hidden]{display:none}
+#vx{position:fixed;top:10px;right:10px;z-index:60}
+#vwrap{position:relative;margin:0 auto}
+.list button{display:block;width:100%;text-align:left;margin-top:6px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(max-width:820px){main{display:flex;flex-direction:column}#L{display:flex;gap:6px;overflow-x:auto;border:0;border-bottom:1px solid var(--line);flex:none}#L h2{display:none}#L .b{width:auto;margin:0;white-space:nowrap}#R{border:0;border-top:1px solid var(--line);max-height:38vh;flex:none}#stage{flex:1}#pn{display:none}}
+@media(prefers-reduced-motion:reduce){.in{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+ <header>
+  <h1>Oficina de Sites</h1><span id="pn"></span><span class="sp"></span>
+  <button class="b" id="bProj">Projetos</button>
+  <button class="b" id="bCfg" hidden>Nome e visibilidade</button>
+  <button class="b" id="bPrev">Prévia</button>
+  <button class="b p" id="bSave">Salvar</button>
+  <button class="b pub" id="bPub" hidden>Publicar</button>
+ </header>
+ <main>
+  <aside id="L"><h2>Adicionar</h2>
+   <button class="b" data-add="title">T&nbsp; Título</button>
+   <button class="b" data-add="text">¶&nbsp; Texto</button>
+   <button class="b" data-add="btn">▭&nbsp; Botão</button>
+   <button class="b" data-add="img">▣&nbsp; Imagem</button>
+   <button class="b" data-add="box">◻&nbsp; Caixa</button>
+  </aside>
+  <section id="stage"><div id="wrap"><div class="frame" id="fr"></div></div></section>
+  <aside id="R">
+   <h2>Tela</h2>
+   <label class="f" for="pFrame">Cor de fundo da tela</label><input type="color" id="pFrame" value="#ffffff">
+   <div id="none" class="note" style="margin-top:16px">Clique em um elemento da tela para editar. Arraste para mover e use a bolinha do canto para redimensionar.</div>
+   <div id="props" hidden>
+    <h2 style="margin-top:18px">Elemento</h2>
+    <div data-for="title text btn"><label class="f" for="pText">Texto</label><textarea id="pText" rows="3"></textarea></div>
+    <div data-for="btn"><label class="f" for="pHref">Link do botão (https://…)</label><input type="url" id="pHref" placeholder="https://"></div>
+    <div data-for="img"><label class="f" for="pSrc">Endereço da imagem (https://…)</label><input type="url" id="pSrc" placeholder="https://"></div>
+    <div data-for="title text btn"><label class="f" for="pColor">Cor do texto</label><input type="color" id="pColor"></div>
+    <div data-for="title text btn img box"><label class="f" for="pBg">Cor de fundo</label><input type="color" id="pBg"></div>
+    <div data-for="title text btn"><label class="f" for="pFs">Tamanho da letra</label><input type="range" id="pFs" min="10" max="120"></div>
+    <label class="f" for="pR">Cantos arredondados</label><input type="range" id="pR" min="0" max="200">
+    <label class="f" for="pOp">Transparência</label><input type="range" id="pOp" min="0.1" max="1" step="0.05">
+    <label class="f" for="pFx">Efeito</label>
+    <select id="pFx"><option value="">Nenhum</option><option value="fade">Aparecer suave</option><option value="slide">Subir ao aparecer</option><option value="zoom">Zoom ao aparecer</option><option value="pulse">Pulsar</option><option value="float">Flutuar</option><option value="spin">Girar</option><option value="shake">Tremer</option><option value="grow">Crescer ao passar o mouse</option><option value="glow">Brilho ao passar o mouse</option></select>
+    <div id="fx"><button class="b" id="bDup">Duplicar</button><button class="b" id="bTop">Trazer p/ frente</button><button class="b" id="bDel">Excluir</button></div>
+   </div>
+  </aside>
+ </main>
+</div>
+
+<div id="vw" hidden><button class="b" id="vx" hidden>Fechar prévia</button><div id="vwrap"><div class="frame" id="vf"></div></div></div>
+
+<dialog id="dSave">
+ <h3>Salvar projeto</h3>
+ <label for="iName" class="note">Nome do projeto</label>
+ <input type="text" id="iName" maxlength="60" placeholder="Ex.: Meu portfólio">
+ <label class="opt"><input type="radio" name="vis" value="public"><span>Público<small>Pode ser publicado e abre por link.</small></span></label>
+ <label class="opt"><input type="radio" name="vis" value="private" checked><span>Privado<small>Fica só neste navegador.</small></span></label>
+ <label class="opt off"><input type="radio" name="vis" value="chosen" disabled><span>Somente escolhidos<small>Em breve.</small></span></label>
+ <div class="row"><button class="b" id="sCancel">Cancelar</button><button class="b p" id="sOk">Salvar</button></div>
+</dialog>
+
+<dialog id="dPub">
+ <div id="pub1">
+  <h3>Publicar “<span id="pubName"></span>”?</h3>
+  <div class="terms">Ao publicar, seu site passa a abrir para qualquer pessoa que tiver o link. Você declara que o conteúdo é seu ou que você tem permissão para usá-lo, e que ele não contém material ilegal, ofensivo ou que viole direitos de terceiros. Quem tiver o link poderá vê-lo e compartilhá-lo.</div>
+  <label class="opt"><input type="checkbox" id="c1"><span>Li e concordo com as condições de publicação.</span></label>
+  <label class="opt"><input type="checkbox" id="c2"><span>Tenho permissão para usar todo o conteúdo deste site.</span></label>
+  <div class="row"><button class="b" id="pCancel">Cancelar</button><button class="b pub" id="pGo" disabled>Publicar</button></div>
+ </div>
+ <div id="pub2" hidden>
+  <h3 id="p2t">Gerando o link…</h3>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="note" id="p2n">Isso pode levar até 60 segundos em projetos grandes.</div>
+  <div id="p2r" hidden>
+   <input id="lk" readonly aria-label="Link do site">
+   <p class="note" id="lkn"></p>
+   <div class="row"><button class="b" id="bCopy">Copiar link</button><a class="b p" id="bOpen" target="_blank" rel="noopener" style="text-decoration:none">Abrir site</a><button class="b" id="p2x">Fechar</button></div>
+  </div>
+ </div>
+</dialog>
+
+<dialog id="dProj"><h3>Projetos</h3><div class="list" id="plist"></div><div class="row"><button class="b" id="jNew">Novo projeto</button><button class="b" id="jX">Fechar</button></div></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const W=1000,H=640,K='oficina:projetos';
+const DEF={
+ title:{w:520,h:72,text:'Seu título aqui',fs:44,color:'#1b2233',bg:'transparent',r:0},
+ text:{w:420,h:110,text:'Escreva seu texto aqui. Edite no painel ao lado.',fs:18,color:'#1b2233',bg:'transparent',r:0},
+ btn:{w:200,h:54,text:'Clique aqui',fs:18,color:'#ffffff',bg:'#3b5bff',r:12,href:''},
+ img:{w:320,h:210,src:'',bg:'#d9deec',color:'#000000',fs:16,r:10},
+ box:{w:300,h:200,bg:'#dfe6ff',color:'#000000',fs:16,r:14}};
+let S=blank(),sel=null,dirty=false,SC=1;
+function blank(){return{id:null,name:'',vis:'private',bg:'#ffffff',els:[],saved:false}}
+const safeC=c=>/^(#[0-9a-f]{3,8}|transparent)$/i.test(c)?c:'#000000';
+const num=(v,d)=>isFinite(+v)&&v!==''&&v!=null?+v:d;
+const hex=v=>/^#[0-9a-f]{6}$/i.test(v)?v:'#ffffff';
+let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2600)}
+
+/* ---------- desenho ---------- */
+function mk(e,edit){
+ const d=document.createElement('div');d.className='el';d.dataset.id=e.id||'';
+ Object.assign(d.style,{left:num(e.x,0)+'px',top:num(e.y,0)+'px',width:num(e.w,100)+'px',height:num(e.h,50)+'px',opacity:num(e.op,1)});
+ const i=document.createElement('div');
+ i.className='in t-'+(/^[a-z]+$/.test(e.type)?e.type:'box')+(/^[a-z]+$/.test(e.fx||'')?' fx-'+e.fx:'');
+ Object.assign(i.style,{background:safeC(e.bg),color:safeC(e.color),fontSize:num(e.fs,16)+'px',borderRadius:num(e.r,0)+'px'});
+ if(e.type==='img'){if(/^(https?:|data:image\/)/i.test(e.src||'')){const m=new Image();m.src=e.src;m.alt='';i.append(m)}}
+ else if(e.type!=='box')i.textContent=String(e.text||'');
+ d.append(i);
+ if(e.type==='btn'&&!edit)d.onclick=()=>{if(/^https?:\/\//i.test(e.href||''))open(e.href,'_blank','noopener')};
+ if(edit){const h=document.createElement('i');h.className='h';d.append(h);if(e.id===sel)d.classList.add('sel')}
+ return d}
+function draw(host,edit){host.innerHTML='';host.style.background=safeC(S.bg);S.els.forEach(e=>host.append(mk(e,edit)))}
+function fit(){
+ const st=$('#stage');SC=Math.min(1,(st.clientWidth-24)/W);
+ $('#wrap').style.width=W*SC+'px';$('#wrap').style.height=H*SC+'px';
+ $('#fr').style.transform=`scale(${SC})`}
+function fitView(){
+ const s=Math.min(1,innerWidth/W);$('#vwrap').style.width=W*s+'px';$('#vwrap').style.height=H*s+'px';
+ $('#vf').style.transform=`scale(${s})`}
+
+/* ---------- edição ---------- */
+const get=()=>S.els.find(e=>e.id===sel);
+function select(id){
+ sel=id;$$('#fr .el').forEach(n=>n.classList.toggle('sel',n.dataset.id===id));
+ const e=get();$('#props').hidden=!e;$('#none').hidden=!!e;if(!e)return;
+ $$('[data-for]').forEach(n=>n.hidden=!n.dataset.for.split(' ').includes(e.type));
+ $('#pText').value=e.text||'';$('#pHref').value=e.href||'';$('#pSrc').value=e.src||'';
+ $('#pColor').value=hex(e.color);$('#pBg').value=hex(e.bg);$('#pFs').value=e.fs||16;
+ $('#pR').value=e.r||0;$('#pOp').value=e.op??1;$('#pFx').value=e.fx||''}
+function refresh(){const e=get();if(!e)return;const o=$(`#fr .el[data-id="${e.id}"]`);o.replaceWith(mk(e,true));dirty=true}
+const bind={pText:'text',pHref:'href',pSrc:'src',pColor:'color',pBg:'bg',pFs:'fs',pR:'r',pOp:'op',pFx:'fx'};
+for(const k in bind)$('#'+k).addEventListener('input',ev=>{const e=get();if(!e)return;e[bind[k]]=ev.target.type==='range'?+ev.target.value:ev.target.value;refresh()});
+$('#pFrame').addEventListener('input',ev=>{S.bg=ev.target.value;$('#fr').style.background=S.bg;dirty=true});
+$$('[data-add]').forEach(b=>b.onclick=()=>{
+ const t=b.dataset.add,n=S.els.length%6*24;
+ const e={id:'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),type:t,x:80+n,y:70+n,op:1,fx:'',...DEF[t]};
+ S.els.push(e);$('#fr').append(mk(e,true));select(e.id);dirty=true});
+$('#bDel').onclick=()=>{S.els=S.els.filter(e=>e.id!==sel);$(`#fr .el[data-id="${sel}"]`)?.remove();select(null);dirty=true};
+$('#bDup').onclick=()=>{const e=get();if(!e)return;const c={...e,id:'e'+Date.now().toString(36),x:e.x+24,y:e.y+24};S.els.push(c);$('#fr').append(mk(c,true));select(c.id);dirty=true};
+$('#bTop').onclick=()=>{const e=get();if(!e)return;S.els=S.els.filter(x=>x!==e).concat(e);draw($('#fr'),true);select(e.id);dirty=true};
+addEventListener('keydown',ev=>{if(ev.key==='Delete'&&sel&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))$('#bDel').click()});
+$('#fr').addEventListener('pointerdown',ev=>{
+ const el=ev.target.closest('.el');
+ if(!el){select(null);return}
+ const e=S.els.find(x=>x.id===el.dataset.id);if(!e)return;
+ const rs=ev.target.classList.contains('h');select(e.id);
+ const x0=ev.clientX,y0=ev.clientY,ox=e.x,oy=e.y,ow=e.w,oh=e.h;
+ const mv=m=>{const dx=(m.clientX-x0)/SC,dy=(m.clientY-y0)/SC;
+  if(rs){e.w=Math.max(24,Math.round(ow+dx));e.h=Math.max(24,Math.round(oh+dy));el.style.width=e.w+'px';el.style.height=e.h+'px'}
+  else{e.x=Math.round(ox+dx);e.y=Math.round(oy+dy);el.style.left=e.x+'px';el.style.top=e.y+'px'}dirty=true};
+ const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up)};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up)});
+
+/* ---------- salvar ---------- */
+const all=()=>{try{return JSON.parse(localStorage[K]||'{}')}catch{return{}}};
+function persist(){
+ S.id=S.id||'p'+Date.now().toString(36);const a=all();a[S.id]={...S,saved:true,upd:Date.now()};
+ try{localStorage[K]=JSON.stringify(a)}catch{toast('Não foi possível salvar: armazenamento cheio.');return false}
+ S.saved=true;dirty=false;ui();return true}
+function ui(){
+ $('#pn').textContent=S.name;$('#bCfg').hidden=!S.saved;$('#bPub').hidden=!(S.saved&&S.vis==='public');document.title=(S.name?S.name+' · ':'')+'Oficina de Sites'}
+$('#bSave').onclick=()=>{if(!S.saved||!S.name)openSave();else if(persist())toast('Projeto salvo.')};
+$('#bCfg').onclick=openSave;
+function openSave(){$('#iName').value=S.name;$$('[name=vis]').forEach(r=>r.checked=r.value===S.vis);$('#dSave').showModal();$('#iName').focus()}
+$('#sCancel').onclick=()=>$('#dSave').close();
+$('#sOk').onclick=()=>{
+ const n=$('#iName').value.trim();if(!n){$('#iName').focus();toast('Digite o nome do projeto.');return}
+ S.name=n;S.vis=$('[name=vis]:checked').value;
+ if(persist()){$('#dSave').close();toast(S.vis==='public'?'Salvo. O botão Publicar apareceu no canto.':'Projeto salvo como privado.')}};
+
+/* ---------- projetos ---------- */
+$('#bProj').onclick=()=>{
+ const a=Object.values(all()).sort((x,y)=>y.upd-x.upd),l=$('#plist');l.innerHTML='';
+ if(!a.length)l.innerHTML='<p class="note">Nenhum projeto salvo ainda.</p>';
+ a.forEach(p=>{const b=document.createElement('button');b.className='b';b.textContent=p.name+(p.vis==='public'?' (público)':' (privado)');b.onclick=()=>{load(p);$('#dProj').close()};l.append(b)});
+ $('#dProj').showModal()};
+$('#jX').onclick=()=>$('#dProj').close();
+$('#jNew').onclick=()=>{if(dirty&&!confirm('Há alterações não salvas. Começar um projeto novo mesmo assim?'))return;load(blank());$('#dProj').close()};
+function load(p){S={...blank(),...p,els:(p.els||[]).map(e=>({...e}))};sel=null;dirty=false;$('#pFrame').value=hex(S.bg);draw($('#fr'),true);select(null);ui()}
+
+/* ---------- prévia ---------- */
+$('#bPrev').onclick=()=>{draw($('#vf'),false);$('#vw').style.background=safeC(S.bg);$('#vw').hidden=false;$('#vx').hidden=false;fitView()};
+$('#vx').onclick=()=>{$('#vw').hidden=true};
+
+/* ---------- publicar ---------- */
+async function enc(o){
+ const j=JSON.stringify(o);let b,p='z';
+ try{const s=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw'));b=new Uint8Array(await new Response(s).arrayBuffer())}
+ catch{p='r';b=new TextEncoder().encode(j)}
+ let t='';b.forEach(c=>t+=String.fromCharCode(c));
+ return p+btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+async function dec(s){
+ s=decodeURIComponent(s.trim());const p=s[0];
+ s=s.slice(1).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';
+ const b=Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+ if(p==='r')return JSON.parse(new TextDecoder().decode(b));
+ const r=new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return JSON.parse(await new Response(r).text())}
+$('#bPub').onclick=()=>{
+ if(dirty&&!persist())return;
+ $('#pubName').textContent=S.name;$('#c1').checked=$('#c2').checked=false;$('#pGo').disabled=true;
+ $('#pub1').hidden=false;$('#pub2').hidden=true;$('#dPub').showModal()};
+const chk=()=>$('#pGo').disabled=!($('#c1').checked&&$('#c2').checked);
+$('#c1').onchange=$('#c2').onchange=chk;
+$('#pCancel').onclick=$('#p2x').onclick=()=>$('#dPub').close();
+$('#pGo').onclick=async()=>{
+ $('#pub1').hidden=true;$('#pub2').hidden=false;$('#p2r').hidden=true;$('#p2t').textContent='Gerando o link…';
+ $('#p2n').hidden=false;$('#p2n').textContent='Empacotando seu projeto. Isso pode levar até 60 segundos.';
+ const t0=Date.now(),bar=$('#bar');bar.style.width='0';
+ const tick=setInterval(()=>{bar.style.width=(90*(1-Math.exp(-(Date.now()-t0)/3000)))+'%'},250);
+ try{
+  const payload={n:S.name,bg:S.bg,els:S.els.map(({id,...r})=>r)};
+  const timeout=new Promise((_,rj)=>setTimeout(()=>rj(new Error('t')),60000));
+  const data=await Promise.race([enc(payload),timeout]);
+  await new Promise(r=>setTimeout(r,Math.max(0,2500-(Date.now()-t0))));
+  clearInterval(tick);bar.style.width='100%';
+  const link=location.href.split('#')[0]+'#v='+data;
+  S.link=link;persist();
+  $('#p2t').textContent='Site publicado!';$('#p2n').hidden=true;$('#p2r').hidden=false;
+  $('#lk').value=link;$('#bOpen').href=link;
+  $('#lkn').textContent=!/github\.io$/.test(location.hostname)?'Atenção: este link foi gerado fora do GitHub Pages e só vai funcionar aqui. Envie o site para o GitHub Pages, abra por lá e publique de novo.':link.length>8000?'Link longo: alguns aplicativos podem cortá-lo. Reduza elementos para encurtar.':'Qualquer pessoa com este link vê o seu site.'
+ }catch(err){
+  clearInterval(tick);bar.style.width='0';$('#p2t').textContent='Não foi possível publicar';
+  $('#p2n').textContent=err.message==='t'?'A publicação passou de 60 segundos. Reduza o projeto e tente de novo.':'Seu navegador não suporta este recurso. Use uma versão atual do Chrome, Edge, Firefox ou Safari.'}};
+$('#bCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('#lk').value)}catch{$('#lk').select();document.execCommand('copy')}toast('Link copiado.')};
+
+/* ---------- início ---------- */
+async function boot(){
+ if(location.hash.startsWith('#v=')){
+  $('#app').hidden=true;$('#vw').hidden=false;
+  try{const o=await dec(location.hash.slice(3));S={...blank(),name:o.n,bg:o.bg,els:o.els||[]};
+   document.title=S.name||'Site';$('#vw').style.background=safeC(S.bg);draw($('#vf'),false);fitView();addEventListener('resize',fitView)}
+  catch(err){$('#vw').style.background='#fff';$('#vw').style.color='#1b2233';$('#vw').innerHTML='<p style="padding:30px;font-size:18px">Não foi possível abrir este site. O link pode estar cortado ou incompleto: gere e copie o link de novo.</p><p style="padding:0 30px;font-size:13px">Detalhe: '+String(err&&err.message||err).replace(/</g,'&lt;')+'</p>'}
+  return}
+ draw($('#fr'),true);fit();addEventListener('resize',fit);select(null)}
+addEventListener('hashchange',()=>location.reload());
+boot();
+</script>
+</body>
+</html>
